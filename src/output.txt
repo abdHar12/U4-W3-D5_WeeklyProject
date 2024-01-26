@@ -1,0 +1,6 @@
+Libro{Isbn: 1412610707, autore='Chung Renner', genre='Crime/Detective', titolo='Shall not Perish', yearOfPubblication=2013, numOfPage=119}
+Rivista{Isbn= 311106381, periodicita=MENSILE, titolo='Specimen Days', yearOfPubblication=2005, numOfPage=272}
+Libro{Isbn: 2084668581, autore='Rickey Nicolas Jr.', genre='Narrative nonfiction', titolo='All Passion Spent', yearOfPubblication=1995, numOfPage=536}
+Rivista{Isbn= 863858555, periodicita=MENSILE, titolo='No Longer at Ease', yearOfPubblication=2001, numOfPage=468}
+Libro{Isbn: 1436870939, autore='Cassey Bartell', genre='Folklore', titolo='The Sun Also Rises', yearOfPubblication=1995, numOfPage=140}
+Libro{Isbn: 1849759957, autore='Mario Welch PhD', genre='Fiction narrative', titolo='The Mirror Crack'd from Side to Side', yearOfPubblication=2006, numOfPage=184}
