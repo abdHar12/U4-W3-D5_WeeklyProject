@@ -2,10 +2,9 @@ package harouane;
 
 import com.github.javafaker.Faker;
 import harouane.DAO.BibliografiaDAO;
+import harouane.DAO.PrestititoDAO;
 import harouane.DAO.UserDAO;
-import harouane.Entities.Libro;
-import harouane.Entities.Rivista;
-import harouane.Entities.User;
+import harouane.Entities.*;
 import harouane.Enum.Periodicita;
 import harouane.Exceptions.AuthorNotFound;
 import harouane.Exceptions.DateNotFound;
@@ -17,10 +16,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.io.File;
+import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.InputMismatchException;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class Archivio {
@@ -44,7 +42,6 @@ public class Archivio {
     }
     static MyFunction systemOutInitialChoice1=()->{
         System.out.println("\nCosa vuoi fare? ");
-        System.out.println("0: Mostrare tutti gli elemnti");
         System.out.println("1: Aggiungere un elemento");
         System.out.println("2: Rimuovere un elemento");
         System.out.println("3: Trovare un elemento con ISBN");
@@ -81,19 +78,22 @@ public class Archivio {
     };
     static MyFunction systemOutPutTheIsbnToRemove=()->{
         Scanner sc= new Scanner(System.in);
-        //showAllElements();
         System.out.println("Che elemento vuoi rimuovere: ");
         System.out.printf("Inserisci l'ISBN: ");
-        Integer isbn = sc.nextInt();
+        String isbn = sc.next();
+        BibliografiaDAO bibliografiaDAO= new BibliografiaDAO(em);
+        bibliografiaDAO.removeElementFromCatalog(UUID.fromString(isbn));
         //Bibliografia.removeElement(isbn);
     };
     static MyFunction systemOutPutTheIsbnToFind=()->{
         Scanner sc= new Scanner(System.in);
         System.out.println("Che elemento vuoi trovare: ");
         System.out.printf("Inserisci l'ISBN: ");
-        Integer isbn = sc.nextInt();
+        String isbn = sc.nextLine();
+        BibliografiaDAO bibliografiaDAO= new BibliografiaDAO(em);
+        Bibliografia found= bibliografiaDAO.findCatalog(UUID.fromString(isbn));
         System.out.print("Ecco il tuo elemento: ");
-        //System.out.println(Bibliografia.findElementByIsbn(isbn));
+        System.out.println(found);
     };
     static MyFunction systemOutFindByAuthor=()->{
         System.out.println("Cosa vuoi fare?");
@@ -125,10 +125,8 @@ public class Archivio {
     }
     public static void initialChoice(){
         while (choice!=8){
-        tryCatchForChoices(systemOutInitialChoice1,0, 8);
+        tryCatchForChoices(systemOutInitialChoice1,1, 8);
         switch (choice){
-            case 0:
-                break;
             case 1:
                 choice1();
                 break;
@@ -151,7 +149,6 @@ public class Archivio {
                 choice7();
                 break;
             case 8:
-
                 System.exit(0);
                 break;
         }
@@ -159,6 +156,25 @@ public class Archivio {
     }
     static Supplier<User> randomUser=()->{
         return new User(faker.name().firstName(), faker.name().lastName(), faker.date().birthday(12, 80).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+    };
+
+    static Supplier<Prestito> randomLoan=()->{
+        Date date=faker.date().between(Date.from(LocalDate.parse("2023-05-01").atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                (Date.from(LocalDate.parse("2024-01-26").atStartOfDay(ZoneId.systemDefault()).toInstant())));
+        System.out.println(date);
+        Random random=new Random();
+        LocalDate dateLoan=date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
+        LocalDate dateReturn=dateLoan.plusDays(30);
+        BibliografiaDAO bibliografiaDAO= new BibliografiaDAO(em);
+        UserDAO userDAO=new UserDAO(em);
+        List<User> allUser=userDAO.getAllUsers();
+        List<Bibliografia> allCatalog=bibliografiaDAO.getAllCatalog();
+        if(!allUser.isEmpty() && !allCatalog.isEmpty()){
+            User randomUser = allUser.get(random.nextInt(0, allUser.size()));
+            Bibliografia randomCatalog = allCatalog.get(random.nextInt(0, allCatalog.size()));
+            return new Prestito(dateLoan, dateReturn, randomCatalog, randomUser);
+        }
+        return null;
     };
 
     static Supplier<Integer> randomNumPage=()->{
@@ -192,6 +208,7 @@ public class Archivio {
         Periodicita periodicita = null;
         BibliografiaDAO bibliografiaDAO=new BibliografiaDAO(em);
         UserDAO userDAO=new UserDAO(em);
+        PrestititoDAO prestititoDAO= new PrestititoDAO(em);
         do{
             tryCatchForChoices(systemOutChoice1, 0, 4);
             switch (choice) {
@@ -217,7 +234,10 @@ public class Archivio {
                     userDAO.saveNewUser(randomUser.get());
                     break;
                 case 4:
-
+                    Prestito prestito= randomLoan.get();
+                    if(prestito!=null)
+                        prestititoDAO.createNewLoans(prestito);
+                    else System.out.println("Nessun prestito creato");
                     break;
             }
         }while (!(choice==0));
@@ -230,6 +250,7 @@ public class Archivio {
         removeOrFindTheIsbn(systemOutFindElementOrExit, systemOutPutTheIsbnToFind);
     }
     public static void choice4() {
+        BibliografiaDAO bibliografiaDAO=new BibliografiaDAO(em);
         continueCycle=true;
         while (continueCycle){
             continueCycle=false;
@@ -240,7 +261,9 @@ public class Archivio {
                     case 1:
                         try {
                             System.out.printf("Inserisci l'anno di pubblicazione: ");
-                            Integer year= sc.nextInt();
+                            Integer year = sc.nextInt();
+                            System.out.println("Gli elementi:");
+                            bibliografiaDAO.findElementsByDate(year).forEach(el->System.out.println(el));
                         } catch (DateNotFound e) {
                             System.out.println("Data non trovata!");
                             continueCycle = true;
@@ -302,10 +325,6 @@ public class Archivio {
                             f2.apply();
                         } catch (InexistentIsbn e) {
                             System.out.println(e.getMessage());
-                            continueCycle = true;
-                            continue;
-                        } catch (InputMismatchException e) {
-                            System.out.println("Attento ad inserire solo numeri!");
                             continueCycle = true;
                             continue;
                         }

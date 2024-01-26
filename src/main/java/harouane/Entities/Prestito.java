@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
-
+@Entity
 public class Prestito {
     @Id
     @GeneratedValue
@@ -22,10 +22,12 @@ public class Prestito {
     @ManyToOne
     @JoinColumn(name = "user_card")
     User user;
-    public Prestito(LocalDate dateLoan, LocalDate dateReturn, LocalDate expectedReturn) {
+
+    public Prestito(LocalDate dateLoan, LocalDate dateReturn, Bibliografia catalog, User user) {
         this.dateLoan = dateLoan;
         this.dateReturn = dateReturn;
-        this.expectedReturn = expectedReturn;
+        this.catalog = catalog;
+        this.user = user;
     }
 
 }

@@ -1,17 +1,19 @@
 package harouane.Entities;
 
 import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @DiscriminatorColumn(name = "tipo_bibliografia")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@NamedQuery(name="getAllCatalog", query="SELECT b FROM Bibliografia b")
+@NamedQuery(name="findByYear", query="SELECT b FROM Bibliografia b WHERE b.yearOfPubblication=:year")
 public abstract class Bibliografia {
     @Id
     @GeneratedValue
     @Column(nullable = false)
     protected UUID isbn;
-
     @Column(nullable = false)
     protected String titolo;
     @Column(name = "year_pubblication", nullable = false)
@@ -20,8 +22,8 @@ public abstract class Bibliografia {
     @Column(name = "num_page", nullable = false)
     protected Integer numOfPage;
 
-    /*@OneToMany(mappedBy = "catalog")
-    Set<Prestito> loans;*/
+    @OneToMany(mappedBy = "catalog")
+    Set<Prestito> loans;
     public Bibliografia(String titolo, Integer yearOfPubblication, Integer numOfPage) {
         this.titolo = titolo;
         this.yearOfPubblication =yearOfPubblication;
@@ -76,8 +78,6 @@ public abstract class Bibliografia {
   public static Bibliografia findElementByIsbn(Integer isbn) throws InexistentIsbn{
 
     };
-    public static List<Bibliografia> findElementsByDate(Integer year) throws DateNotFound {
-
-    };*/
+*/
 
 }

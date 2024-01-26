@@ -1,13 +1,12 @@
 package harouane.Entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
+@NamedQuery(name = "getAllUsers", query = "SELECT u FROM User u")
 public class User {
     @Id
     @GeneratedValue
@@ -16,10 +15,10 @@ public class User {
     String surname;
     @Column(name = "date_birthday")
     LocalDate dateBirthday;
-/*
+
     @OneToMany(mappedBy = "user")
     Set<Prestito> loans;
-*/
+
     public User(String name, String surname, LocalDate dateBirthday) {
         this.name = name;
         this.surname = surname;
@@ -61,4 +60,5 @@ public class User {
     public void setLoans(Set<Prestito> loans) {
         this.loans = loans;
     }*/
+
 }
