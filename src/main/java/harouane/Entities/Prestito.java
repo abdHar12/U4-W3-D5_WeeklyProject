@@ -6,6 +6,7 @@ import java.util.UUID;
 
 @Entity
 @NamedQuery(name="findLoansNotReturnedByUserCard", query = "SELECT p FROM Prestito p WHERE p.dateReturn IS NULL AND :usercard=p.user.numberCard")
+@NamedQuery(name = "findLoansNotReturnedAndExpired", query = "SELECT p FROM Prestito p WHERE p.dateReturn IS NULL AND CURRENT_DATE>p.expectedReturn")
 public class Prestito {
     @Id
     @GeneratedValue
@@ -32,7 +33,7 @@ public class Prestito {
 
     @Override
     public String toString() {
-        return "Prestito{" +
+        return "\nPrestito{" +
                 "dateLoan=" + dateLoan +
                 ", dateReturn=" + dateReturn +
                 ", expectedReturn=" + expectedReturn +

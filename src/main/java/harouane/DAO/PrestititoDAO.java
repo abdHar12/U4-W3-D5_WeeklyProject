@@ -24,11 +24,20 @@ public class PrestititoDAO {
         System.out.println("Il prestito è stato creato.");
     }
 
-public List<Prestito> findLoansNotReturnedByUserCard(UUID numberCard) throws ElementsNotFound{
-    TypedQuery<Prestito> getLoans=em.createNamedQuery("findLoansNotReturnedByUserCard", Prestito.class);
-    getLoans.setParameter("usercard", numberCard);
-    List<Prestito> elements= getLoans.getResultList();
-    if(elements.isEmpty()) throw new ElementsNotFound();
-    return elements;
-}
+    public List<Prestito> findLoansNotReturnedByUserCard(UUID numberCard) throws ElementsNotFound {
+        TypedQuery<Prestito> getLoans = em.createNamedQuery("findLoansNotReturnedByUserCard", Prestito.class);
+        getLoans.setParameter("usercard", numberCard);
+        List<Prestito> elements = getLoans.getResultList();
+        if (elements.isEmpty()) throw new ElementsNotFound();
+        return elements;
+    }
+
+    public List<Prestito> findLoansNotReturnedAndExpired() throws ElementsNotFound{
+        TypedQuery<Prestito> getLoans = em.createNamedQuery("findLoansNotReturnedAndExpired", Prestito.class);
+        List<Prestito> elements = getLoans.getResultList();
+        if (elements.isEmpty()) throw new ElementsNotFound();
+        return elements;
+    }
+
+
 }
