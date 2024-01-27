@@ -9,6 +9,8 @@ import java.util.UUID;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @NamedQuery(name="getAllCatalog", query="SELECT b FROM Bibliografia b")
 @NamedQuery(name="findByYear", query="SELECT b FROM Bibliografia b WHERE b.yearOfPubblication=:year")
+@NamedQuery(name = "findByAuthor", query="SELECT b FROM Bibliografia b WHERE b.autore=:author")
+@NamedQuery(name = "findByTitle", query="SELECT b FROM Bibliografia b WHERE LOWER(b.titolo) LIKE LOWER(:title)")
 public abstract class Bibliografia {
     @Id
     @GeneratedValue

@@ -1,7 +1,9 @@
 package harouane.DAO;
 
 import harouane.Entities.Bibliografia;
+import harouane.Exceptions.AuthorNotFound;
 import harouane.Exceptions.DateNotFound;
+import harouane.Exceptions.ElementsNotFound;
 import harouane.Exceptions.InexistentIsbn;
 
 import javax.persistence.EntityManager;
@@ -13,7 +15,6 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class BibliografiaDAO {
-
     private static EntityManager em;
 
     public BibliografiaDAO(EntityManager em) {
@@ -35,19 +36,25 @@ public class BibliografiaDAO {
         return bibliografia;
     };
 
-    public Bibliografia findCatalog(UUID isbn){
+    public Bibliografia findCatalog(UUID isbn) throws InexistentIsbn{
         TypedQuery<Bibliografia> getSpecificCatalogRecord=em.createQuery("SELECT b FROM Bibliografia b WHERE b.isbn=:isbn", Bibliografia.class);
         getSpecificCatalogRecord.setParameter("isbn", isbn);
-        return getSpecificCatalogRecord.getSingleResult();
+        Bibliografia element = getSpecificCatalogRecord.getSingleResult();
+        if (element==null) throw new InexistentIsbn(isbn);
+        return element;
     }
-    public List<Bibliografia> getAllCatalog(){
+    public List<Bibliografia> getAllCatalog() throws ElementsNotFound {
         TypedQuery<Bibliografia> getAllCatalog=em.createNamedQuery("getAllCatalog", Bibliografia.class);
-        return getAllCatalog.getResultList();
+        List<Bibliografia> elements= getAllCatalog.getResultList();
+        if(elements.isEmpty()) throw new ElementsNotFound();
+        return elements;
     }
     public void removeElementFromCatalog(UUID isbn) throws InexistentIsbn {
         EntityTransaction transaction= em.getTransaction();
         transaction.begin();
-        em.remove(findCatalog(isbn));
+        Bibliografia element=findCatalog(isbn);
+        if (element==null) throw new InexistentIsbn(isbn);
+        em.remove(element);
         transaction.commit();
         System.out.println("Elemento rimosso");
     }
@@ -55,6 +62,24 @@ public class BibliografiaDAO {
     public List<Bibliografia> findElementsByDate(Integer year) throws DateNotFound {
         TypedQuery<Bibliografia> getAllBooksByDate= em.createNamedQuery("findByYear", Bibliografia.class);
         getAllBooksByDate.setParameter("year", year);
-        return getAllBooksByDate.getResultList();
+        List<Bibliografia> elements = getAllBooksByDate.getResultList();
+        if(elements.isEmpty()) throw new DateNotFound(year);
+        return elements;
+    }
+
+    public List<Bibliografia> findElementsByAuthor(String author) throws AuthorNotFound {
+        TypedQuery<Bibliografia> getAllBookByAuthor = em.createNamedQuery("findByAuthor", Bibliografia.class);
+        getAllBookByAuthor.setParameter("author", author);
+        List<Bibliografia> elements = getAllBookByAuthor.getResultList();
+        if (elements.isEmpty()) throw new AuthorNotFound(author);
+        return elements;
+    }
+
+    public List<Bibliografia> findByTitle(String title) throws ElementsNotFound{
+        TypedQuery<Bibliografia> getAllBookByAuthor = em.createNamedQuery("findByTitle", Bibliografia.class);
+        getAllBookByAuthor.setParameter("title", "%"+title+"%");
+        List<Bibliografia> elements = getAllBookByAuthor.getResultList();
+        if (elements.isEmpty()) throw new ElementsNotFound();
+        return elements;
     }
 }

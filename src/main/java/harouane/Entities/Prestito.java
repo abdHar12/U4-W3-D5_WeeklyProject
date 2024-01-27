@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
+@NamedQuery(name="findLoansNotReturnedByUserCard", query = "SELECT p FROM Prestito p WHERE p.dateReturn IS NULL AND :usercard=p.user.numberCard")
 public class Prestito {
     @Id
     @GeneratedValue
@@ -22,12 +23,61 @@ public class Prestito {
     @ManyToOne
     @JoinColumn(name = "user_card")
     User user;
-
-    public Prestito(LocalDate dateLoan, LocalDate dateReturn, Bibliografia catalog, User user) {
+    public Prestito(LocalDate dateLoan, LocalDate expectedReturn, Bibliografia catalog, User user) {
         this.dateLoan = dateLoan;
-        this.dateReturn = dateReturn;
+        this.expectedReturn = expectedReturn;
         this.catalog = catalog;
         this.user = user;
     }
 
+    @Override
+    public String toString() {
+        return "Prestito{" +
+                "dateLoan=" + dateLoan +
+                ", dateReturn=" + dateReturn +
+                ", expectedReturn=" + expectedReturn +
+                ", catalog=" + catalog +
+                ", user=" + user +
+                '}';
+    }
+
+    public LocalDate getDateLoan() {
+        return dateLoan;
+    }
+
+    public void setDateLoan(LocalDate dateLoan) {
+        this.dateLoan = dateLoan;
+    }
+
+    public LocalDate getDateReturn() {
+        return dateReturn;
+    }
+
+    public void setDateReturn(LocalDate dateReturn) {
+        this.dateReturn = dateReturn;
+    }
+
+    public LocalDate getExpectedReturn() {
+        return expectedReturn;
+    }
+
+    public void setExpectedReturn(LocalDate expectedReturn) {
+        this.expectedReturn = expectedReturn;
+    }
+
+    public Bibliografia getCatalog() {
+        return catalog;
+    }
+
+    public void setCatalog(Bibliografia catalog) {
+        this.catalog = catalog;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

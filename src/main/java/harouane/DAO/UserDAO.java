@@ -1,11 +1,13 @@
 package harouane.DAO;
 
 import harouane.Entities.User;
+import harouane.Exceptions.InexistentNumberCard;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.UUID;
 
 public class UserDAO {
     EntityManager em;
@@ -23,5 +25,12 @@ public class UserDAO {
     public List<User> getAllUsers(){
         TypedQuery<User> getAllUsers=em.createNamedQuery("getAllUsers", User.class);
         return getAllUsers.getResultList();
+    }
+    public User findUser(UUID numberCard) throws InexistentNumberCard {
+        TypedQuery<User> getSpecificCatalogRecord=em.createQuery("SELECT u FROM User u WHERE u.numberCard=:numberCard", User.class);
+        getSpecificCatalogRecord.setParameter("numberCard", numberCard);
+        User element = getSpecificCatalogRecord.getSingleResult();
+        if (element==null) throw new InexistentNumberCard(numberCard);
+        return element;
     }
 }

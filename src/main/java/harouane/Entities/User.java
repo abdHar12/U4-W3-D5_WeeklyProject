@@ -40,10 +40,11 @@ public class User {
     public UUID getNumberCard() {
         return numberCard;
     }
-/*
+
+
     public Set<Prestito> getLoans() {
         return loans;
-    }*/
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -56,9 +57,18 @@ public class User {
     public void setDateBirthday(LocalDate dateBirthday) {
         this.dateBirthday = dateBirthday;
     }
-/*
+
     public void setLoans(Set<Prestito> loans) {
         this.loans = loans;
-    }*/
+    }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "numberCard=" + numberCard +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", dateBirthday=" + dateBirthday +
+                '}';
+    }
 }
