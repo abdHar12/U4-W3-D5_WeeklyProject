@@ -11,8 +11,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 public class Archivio {
-    private static Faker faker= new Faker();
-    private static EntityManagerFactory emf= Persistence.createEntityManagerFactory("catalogo_bibliografico");
+    private static final Faker faker= new Faker();
+    private static final EntityManagerFactory emf= Persistence.createEntityManagerFactory("catalogo_bibliografico");
     public static EntityManager em =  emf.createEntityManager();
     public static Faker getFaker() {
         return faker;
