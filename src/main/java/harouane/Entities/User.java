@@ -1,13 +1,20 @@
 package harouane.Entities;
 
+import com.github.javafaker.Faker;
+import harouane.Archivio;
+import harouane.DAO.UserDAO;
+
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @Entity
 @NamedQuery(name = "getAllUsers", query = "SELECT u FROM User u")
 public class User {
+    private static Faker faker=Archivio.getFaker();
     @Id
     @GeneratedValue
     UUID numberCard;
@@ -61,6 +68,11 @@ public class User {
     public void setLoans(Set<Prestito> loans) {
         this.loans = loans;
     }
+    public static void creationUser(){
+        UserDAO userDAO=new UserDAO(Archivio.em);
+        userDAO.saveNewUser(randomUser.get());
+    }
+    static Supplier<User> randomUser=()-> new User(faker.name().firstName(), faker.name().lastName(), faker.date().birthday(12, 80).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
     @Override
     public String toString() {

@@ -1,8 +1,13 @@
 package harouane.Entities;
 
+import com.github.javafaker.Faker;
+import harouane.Archivio;
+
 import javax.persistence.*;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @Entity
 @DiscriminatorColumn(name = "tipo_bibliografia")
@@ -12,6 +17,7 @@ import java.util.UUID;
 @NamedQuery(name = "findByAuthor", query="SELECT b FROM Bibliografia b WHERE b.autore=:author")
 @NamedQuery(name = "findByTitle", query="SELECT b FROM Bibliografia b WHERE LOWER(b.titolo) LIKE LOWER(:title)")
 public abstract class Bibliografia {
+    protected static final Faker faker= Archivio.getFaker();
     @Id
     @GeneratedValue
     @Column(nullable = false)
@@ -31,7 +37,14 @@ public abstract class Bibliografia {
         this.yearOfPubblication =yearOfPubblication;
         this.numOfPage = numOfPage;
     }
-
+    static Supplier<Integer> yearSupplier=()->{
+        Random random= new Random();
+        return random.nextInt(1990, 2023);
+    };
+    static Supplier<Integer> randomNumPage=()->{
+        Random random= new Random();
+        return random.nextInt(80, 600);
+    };
     public UUID getIsbn() {
         return isbn;
     }

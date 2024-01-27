@@ -1,5 +1,9 @@
 package harouane.Entities;
 
+import com.github.javafaker.Faker;
+import harouane.Archivio;
+import harouane.DAO.BibliografiaDAO;
+
 import javax.persistence.Entity;
 
 @Entity
@@ -29,14 +33,16 @@ public class Libro extends Bibliografia{
         this.genre = genre;
     }
 
-
-
-    /*ppublic static void addAllBooks(Libro book){
-       allBooks.add(book);
-   }
-  ublic static List<Libro> findElementsByAuthor(String author) throws AuthorNotFound {
-
-   }*/
+    public static void creationBook(){
+        Libro book;
+        String author=faker.book().author();
+        String title=faker.book().title();
+        String genre= faker.book().genre();
+        Integer date= yearSupplier.get();
+        BibliografiaDAO bibliografiaDAO=new BibliografiaDAO(Archivio.em);
+        book = new Libro(title, date, randomNumPage.get(), author, genre);
+        bibliografiaDAO.saveNewBookOrMagazine(book);
+    }
     @Override
     public String toString() {
         return "Libro{" +
